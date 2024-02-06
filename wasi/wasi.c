@@ -1733,7 +1733,8 @@ wasiClockTimeGet(
         resultPointer
     ));
 
-#if defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0) && !WASI_FALLBACK_TIMERS_ENABLED && !defined(__wii__)
+/* TODO: Properly support timers on Nintendo 3DS */
+#if defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0) && !WASI_FALLBACK_TIMERS_ENABLED && !defined(__wii__) && !defined(__3DS__)
 
     {
         struct timespec timespec;
@@ -2006,7 +2007,8 @@ wasiClockResGet(
         resultPointer
     ));
 
-#if defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0) && !WASI_FALLBACK_TIMERS_ENABLED && !defined(__wii__)
+/* TODO: Properly support timers on Nintendo 3DS */
+#if defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0) && !WASI_FALLBACK_TIMERS_ENABLED && !defined(__wii__) && !defined(__3DS__)
 
     {
         struct timespec timespec;
@@ -3619,6 +3621,10 @@ wasiPathSymlink(
     /* TODO: */
     WASI_TRACE(("path_symlink: not supported on Wii"));
     return WASI_ERRNO_NOSYS;
+#elif defined(__3DS__)
+    /* TODO: */
+    WASI_TRACE(("path_symlink: not supported on 3DS"));
+    return WASI_ERRNO_NOSYS;
 #else
 
     if (!wasiFileDescriptorGet(dirFD, &preopenFileDescriptor)) {
@@ -3775,6 +3781,10 @@ wasiPathReadlink(
 #elif defined(__wii__)
     /* TODO: */
     WASI_TRACE(("path_readlink: not supported on Wii"));
+    return WASI_ERRNO_NOSYS;
+#elif defined(__3DS__)
+    /* TODO: */
+    WASI_TRACE(("path_readlink: not supported on 3DS"));
     return WASI_ERRNO_NOSYS;
 #else
     if (!wasiFileDescriptorGet(dirFD, &preopenFileDescriptor)) {

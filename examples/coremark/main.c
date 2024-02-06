@@ -62,6 +62,15 @@ initWii() {
 }
 #endif
 
+#ifdef __3DS__
+#include <3ds.h>
+
+void init3DS() {
+    gfxInitDefault();
+    consoleInit(GFX_TOP, NULL);
+}
+#endif
+
 /* Main */
 
 int main(int argc, char* argv[]) {
@@ -75,6 +84,10 @@ int main(int argc, char* argv[]) {
 
 #ifdef __wii__
     initWii();
+#endif
+
+#ifdef __3DS__
+    init3DS();
 #endif
 
     coremarkInstantiate(&instance, NULL);
@@ -101,6 +114,20 @@ int main(int argc, char* argv[]) {
 			exit(0);
 		}
 	}
+#endif
+
+#ifdef __3DS__
+    while (aptMainLoop()) {
+        hidScanInput();
+        u32 kDown = hidKeysDown();
+
+        if (kDown & KEY_START) break;
+
+        gfxFlushBuffers();
+        gfxSwapBuffers();
+
+        gspWaitForVBlank();
+    }
 #endif
 
     return 0;

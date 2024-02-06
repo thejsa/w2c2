@@ -46,3 +46,9 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "NintendoWii")
 
     ogc_create_dol(python)
 endif()
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Nintendo3DS")
+    # target_link_libraries(python PUBLIC)
+
+    ctr_create_3dsx(python)
+endif()

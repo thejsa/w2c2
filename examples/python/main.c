@@ -20,6 +20,10 @@ typedef char bool;
 #include <fat.h>
 #endif
 
+#ifdef __3DS__
+#include <3ds.h>
+#endif
+
 #include "../../w2c2/w2c2_base.h"
 #include "../../wasi/wasi.h"
 #include "python.h"
@@ -31,6 +35,12 @@ trap(
     fprintf(stderr, "TRAP: %s\n", trapDescription(trap));
 #ifdef __wii__
     VIDEO_WaitVSync();
+#endif
+#ifdef __3DS__
+    gfxFlushBuffers();
+    gfxSwapBuffers();
+
+    gfxWaitForVBlank();
 #endif
     abort();
 }
@@ -69,6 +79,13 @@ wiiInitVideo() {
 	if (rmode->viTVMode & VI_NON_INTERLACE) {
         VIDEO_WaitVSync();
     }
+}
+#endif
+
+#ifdef __3DS__
+void n3dsInitVideo() {
+    gfxInitDefault();
+    consoleInit(GFX_TOP, NULL);
 }
 #endif
 
@@ -133,6 +150,12 @@ procExit(
     VIDEO_WaitVSync();
 #endif
     fprintf(stderr, "EXIT: %d\n", code);
+#ifdef __3DS__
+    gfxFlushBuffers();
+    gfxSwapBuffers();
+
+    gfxWaitForVBlank();
+#endif
     exitCode = code;
 }
 
@@ -158,6 +181,14 @@ int main(int argc, char* argv[]) {
 
     wiiInitVideo();
     fatInitDefault();
+#endif
+
+#ifdef __3DS__
+    /* TODO: get interactive console working */
+    argc = 3;
+    argv = (char*[]){"python", "-c", "print(); print(\"Python 3.11 on the 3DS!\\n\"); import sys; print(sys.version)", NULL};
+
+    n3dsInitVideo();
 #endif
 
     /*
@@ -237,6 +268,20 @@ int main(int argc, char* argv[]) {
 			exit(0);
 		}
 	}
+#endif
+
+#ifdef __3DS__
+    while (aptMainLoop()) {
+        hidScanInput();
+        u32 kDown = hidKeysDown();
+
+        if (kDown & KEY_START) break;
+
+        gfxFlushBuffers();
+        gfxSwapBuffers();
+
+        gspWaitForVBlank();
+    }
 #endif
 
     if (newEnviron) {

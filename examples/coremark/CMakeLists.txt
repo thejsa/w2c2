@@ -43,3 +43,7 @@ target_link_libraries(coremark PUBLIC ${WASI})
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "NintendoWii")
     ogc_create_dol(coremark)
 endif()
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Nintendo3DS")
+    ctr_create_3dsx(coremark)
+endif()
